@@ -7,6 +7,3 @@ curl -s http://localhost:5000/health || (timeout /t 5 && goto :flask_check)
 curl -s http://localhost:9090/__admin || (timeout /t 5 && goto :wiremock_check)
 
 pytest --junitxml=result-rest.xml test\rest
-
-taskkill /IM "python.exe" /F
-taskkill /IM "java.exe" /F
