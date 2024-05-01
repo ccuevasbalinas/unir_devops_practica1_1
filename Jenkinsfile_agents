@@ -1,0 +1,73 @@
+pipeline {
+    agent none
+
+    stages {
+        stage('Start') {
+            agent any
+            steps {
+                echo 'Init of pipeline' 
+                bat 'hostname'
+                bat 'whoami'
+                echo WORKSPACE
+                stash name: 'shared_files', includes: '**/*'
+            }
+        }
+        stage('Tests') {
+            parallel {
+                stage('Unit') {
+                    agent {label 'agent1'}
+                    steps {
+                        script {
+                            echo 'Perform unit tests'
+                            bat 'hostname'
+                            bat 'whoami'
+                            echo WORKSPACE
+                            unstash 'shared_files'
+                            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                                bat '''
+                                    SET PYTHONPATH=%WORKSPACE%
+                                    pytest --junitxml=result-unit.xml test\\unit
+                                '''
+                                stash name: 'results_unit_files', includes: 'result-unit.xml'
+                            }
+                        }
+                    }
+                }  
+                stage('Rest') {
+                    agent {label 'agent2'}
+                    steps {
+                        script {
+                            echo 'Perform service tests'
+                            bat 'hostname'
+                            bat 'whoami'
+                            echo WORKSPACE
+                            unstash 'shared_files'
+                            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                                bat '''
+                                    SET PYTHONPATH=%WORKSPACE%
+                                    set FLASK_APP = app\\api.py
+                                    start flask run
+                                    start java -jar C:\\Unir\\wiremock-standalone-3.5.3.jar --port 9090 --root-dir test\\wiremock
+                                    pytest --junitxml=result-rest.xml test\\rest
+                                ''' 
+                                stash name: 'results_rest_files', includes: 'result-rest.xml'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Final') {
+            agent any
+            steps {
+                bat 'hostname'
+                bat 'whoami'
+                echo WORKSPACE
+                unstash 'results_unit_files' 
+                 unstash 'results_rest_files' 
+                junit '**/result-*.xml'
+                echo 'End of pipeline'
+            }
+        }
+    }
+}
