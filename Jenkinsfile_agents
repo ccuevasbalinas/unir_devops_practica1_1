@@ -6,9 +6,13 @@ pipeline {
             agent any
             steps {
                 echo 'Init of pipeline' 
+                echo 'HOSTNAME:'
                 bat 'hostname'
+                echo 'WHOAMI:'
                 bat 'whoami'
+                echo 'WORKSPACE:'
                 echo WORKSPACE
+                git 'https://github.com/ccuevasbalinas/unir_devops_practica1_1'
                 stash name: 'shared_files', includes: '**/*'
             }
         }
@@ -19,8 +23,11 @@ pipeline {
                     steps {
                         script {
                             echo 'Perform unit tests'
+                            echo 'HOSTNAME:'
                             bat 'hostname'
+                            echo 'WHOAMI:'
                             bat 'whoami'
+                            echo 'WORKSPACE:'
                             echo WORKSPACE
                             unstash 'shared_files'
                             catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
@@ -38,8 +45,11 @@ pipeline {
                     steps {
                         script {
                             echo 'Perform service tests'
+                            echo 'HOSTNAME:'
                             bat 'hostname'
+                            echo 'WHOAMI:'
                             bat 'whoami'
+                            echo 'WORKSPACE:'
                             echo WORKSPACE
                             unstash 'shared_files'
                             catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
@@ -60,8 +70,11 @@ pipeline {
         stage('Final') {
             agent any
             steps {
+                echo 'HOSTNAME:'
                 bat 'hostname'
+                echo 'WHOAMI:'
                 bat 'whoami'
+                echo 'WORKSPACE:'
                 echo WORKSPACE
                 unstash 'results_unit_files' 
                  unstash 'results_rest_files' 
