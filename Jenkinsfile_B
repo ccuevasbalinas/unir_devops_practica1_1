@@ -35,7 +35,7 @@ pipeline
                     coverage run --source=app --omit=app\\__init__.py,app\\api.py -m pytest test\\unit
                     coverage xml
                 '''
-                cobertura coberturaReportFile: 'coverage.xml', onlyStable: false, failUnstable:false, conditionalCoverageTargets: '100,90,70', lineCoverageTargets:'95,85,85'
+                cobertura coberturaReportFile: 'coverage.xml', onlyStable: false, failUnstable:false, conditionalCoverageTargets: '100,90,70', lineCoverageTargets:'95,85,95'
             }
         }
     }
