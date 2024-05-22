@@ -56,7 +56,7 @@ pipeline
                     coverage xml
                 '''
                 //catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
-                    cobertura --exit-zero coberturaReportFile: 'coverage.xml', onlyStable: false, failUnstable:false, conditionalCoverageTargets: '90,80,80', lineCoverageTargets:'95,85,85'
+                    cobertura coberturaReportFile: 'coverage.xml', onlyStable: false, failUnstable:false, conditionalCoverageTargets: '90,80,80', lineCoverageTargets:'95,85,85'
                 //}
             }
         }
