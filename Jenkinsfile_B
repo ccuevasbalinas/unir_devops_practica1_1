@@ -2,31 +2,42 @@ pipeline
 {
     agent any
     stages{
+        stage('Static')
+        {
+            steps{
+                echo 'STATIC STAGE'
+                bat '''
+                    SET PYTHONPATH=%WORKSPACE%
+                    flake8 --exit-zero --format=pylint app >flake8.out
+                '''
+                recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], qualityGates: [[threshold: 8, type: 'TOTAL', unstable: true], [threshold: 10, type: 'TOTAL', unstable: false]]
+            }
+        }
         stage('Unit'){
             steps{
                 echo 'UNIT STAGE'
-                catchError(buildResult:'SUCCESS',stageResult:'SUCCESS'){
+                //catchError(buildResult:'SUCCESS',stageResult:'SUCCESS'){
                 //pytest --junitxml=result-unit.xml test\\unit
                 bat '''
                     SET PYTHONPATH=%WORKSPACE%
-                    coverage run --source=app --omit=app\\__init__.py,app\\api.py -m pytest --junitxml=result-unit.xml test\\unit
+                    coverage --exit-zero run --source=app --omit=app\\__init__.py,app\\api.py -m pytest --junitxml=result-unit.xml test\\unit
                     
                 ''' 
-                }
+                //}
             }
         } 
         stage('Rest'){
             steps{
                 echo 'REST STAGE'
-                catchError(buildResult:'SUCCESS',stageResult:'SUCCESS'){
+                //catchError(buildResult:'SUCCESS',stageResult:'SUCCESS'){
                     bat '''
                         SET PYTHONPATH=%WORKSPACE%
                         set FLASK_APP = app\\api.py
                         start flask run
                         start java -jar C:\\Unir\\wiremock-standalone-3.5.3.jar --port 9090 --root-dir test\\wiremock
-                        pytest --junitxml=result-rest.xml test\\rest
+                        pytest --exit-zero --junitxml=result-rest.xml test\\rest
                     '''   
-                }
+                //}
             }
         }
         stage('Cobertura'){
