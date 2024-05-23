@@ -25,6 +25,16 @@ class TestApi(unittest.TestCase):
             response.read().decode(), "3", "ERROR ADD"
         )
 
+    def test_api_sub(self):
+        url = f"{BASE_URL}/calc/substract/2/1"
+        response = urlopen(url, timeout=DEFAULT_TIMEOUT)
+        self.assertEqual(
+            response.status, http.client.OK, f"Error en la petición API a {url}"
+        )
+        self.assertEqual(
+            response.read().decode(), "1", "ERROR SUBSTRACT"
+        )
+
     def test_api_sqrt(self):
         url = f"{BASE_URL_MOCK}/calc/sqrt/64"
         response = urlopen(url, timeout=DEFAULT_TIMEOUT)
