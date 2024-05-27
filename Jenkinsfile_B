@@ -39,9 +39,9 @@ pipeline
                         set FLASK_APP = app\\api.py
                         start flask run
                         start java -jar C:\\Unir\\wiremock-standalone-3.5.3.jar --port 9090 --root-dir test\\wiremock
-                        pytest --junitxml=result-rest.xml test\\rest
-                        junit 'result*.xml'
-                    '''   
+                        pytest --junitxml=result-rest.xml test\\rest     
+                    '''  
+                    junit 'result*.xml' 
                 }
             }
         }
